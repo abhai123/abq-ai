@@ -11,7 +11,7 @@ export default function Home() {
     if (!message.trim() || loading) return;
 
     setLoading(true);
-    setReply("");
+    setReply("Sending...");
 
     try {
       const response = await fetch("/api/chat", {
@@ -26,7 +26,7 @@ export default function Home() {
 
       const text = await response.text();
 
-      let data;
+      let data: { reply?: string; error?: string };
 
       try {
         data = JSON.parse(text);
@@ -42,7 +42,7 @@ export default function Home() {
         throw new Error(data.error || "Something went wrong.");
       }
 
-      setReply(data.reply);
+      setReply(data.reply || "No response received.");
       setMessage("");
     } catch (error) {
       console.error("Chat error:", error);
@@ -60,7 +60,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#0b0b12] text-white">
       <header className="border-b border-white/10 px-5 py-4">
-        <h1 className="text-xl font-bold">ABQ AI</h1>
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-xl font-bold">ABQ AI</h1>
+        </div>
       </header>
 
       <section className="flex min-h-[calc(100vh-73px)] flex-col items-center px-5 py-12">
@@ -124,6 +126,7 @@ export default function Home() {
 
           <div className="mt-6 flex items-center rounded-2xl border border-white/10 bg-white/5 p-2">
             <input
+              type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => {
@@ -139,7 +142,7 @@ export default function Home() {
               type="button"
               onClick={sendMessage}
               disabled={loading}
-              className="rounded-xl bg-white px-5 py-3 font-semibold text-black disabled:opacity-50"
+              className="ml-2 rounded-xl bg-white px-5 py-3 font-semibold text-black hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? "..." : "➤"}
             </button>
